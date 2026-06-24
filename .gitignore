@@ -1,0 +1,43 @@
+# Data — too large for GitHub
+data/
+reports/
+plots/
+
+# Models — too large for GitHub (use Git LFS or share separately)
+models/*.pth
+models/*.pkl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Kaggle API key — NEVER commit this
+.kaggle/
+kaggle.json
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Streamlit
+.streamlit/secrets.toml
