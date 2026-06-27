@@ -34,7 +34,7 @@ def generate_patient_id():
 # PAGE CONFIG
 # ══════════════════════════════════════════════════════════════════
 st.set_page_config(
-    page_title="HEMO CHECK — Blood Clot Diagnostic System",
+    page_title="Hemo Check — Blood Clot Diagnostic System",
     page_icon="assets/favicon.png",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -336,7 +336,7 @@ st.markdown(f"""
     <img src="data:image/png;base64,{logo}" class="brand-logo">
     <div>
       <div class="brand-name">HEMO CHECK</div>
-      <div class="brand-tag">Blood Clot Diagnostic Intelligence System</div>
+      <div class="brand-tag">Diagnostic Intelligence System</div>
     </div>
   </div>
 </div>
@@ -701,34 +701,52 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
                     symptom_result  = symp_res,
                     combined_result = combined,
                     raw_clinical    = raw,
-                    shap_plot_path  = shap_path if 'shap_path' in dir() else None,
+                    shap_plot_path  = locals().get('shap_path', None),
                     gradcam_path    = gradcam_path,
                 )
-                log_prediction(pid, scan_label, combined['overall_label'],
-                               combined['overall_risk'],
-                               combined['overall_confidence'], model_name, phy)
-                log_id = log_audit(pid, scan_label, model_name,
-                                   combined['overall_label'],
-                                   combined['overall_risk'],
-                                   combined['overall_confidence'],
-                                   gradcam=gradcam_path is not None,
-                                   report=True, physician=phy)
+                # ── Always log — before PDF so it never gets skipped ──
+                log_prediction(
+                    pid, scan_label,
+                    combined['overall_label'],
+                    combined['overall_risk'],
+                    combined['overall_confidence'],
+                    model_name, phy
+                )
+                log_id = log_audit(
+                    pid, scan_label, model_name,
+                    combined['overall_label'],
+                    combined['overall_risk'],
+                    combined['overall_confidence'],
+                    gradcam=gradcam_path is not None,
+                    report=True, physician=phy
+                )
 
-                dl_col, id_col = st.columns([2, 1])
-                with dl_col:
-                    with open(pdf_path, 'rb') as f:
-                        st.download_button(
-                            "Download Combined PDF Report",
-                            data=f,
-                            file_name=f"Hemo Check_{scan_label.replace(' ','_')}_{pid}.pdf",
-                            mime="application/pdf",
-                            use_container_width=True
-                        )
-                with id_col:
-                    st.markdown(
-                        f'<p style="font-size:11px;color:#94a3b8;padding-top:10px">'
-                        f'Audit ID: <code style="color:#0891b2">{log_id}</code></p>',
-                        unsafe_allow_html=True)
+                sh("Audit Record")
+                st.markdown(
+                    f'<p style="font-size:11px;color:#64748b">'
+                    f'Saved to history and audit trail. '
+                    f'Log ID: <code style="color:#0891b2">{log_id}</code></p>',
+                    unsafe_allow_html=True)
+
+                sh("Download Combined Report")
+                try:
+                    dl_col, id_col = st.columns([2, 1])
+                    with dl_col:
+                        with open(pdf_path, 'rb') as f:
+                            st.download_button(
+                                "Download Combined PDF Report",
+                                data=f,
+                                file_name=f"Hemo Check_{scan_label.replace(' ','_')}_{pid}.pdf",
+                                mime="application/pdf",
+                                use_container_width=True
+                            )
+                    with id_col:
+                        st.markdown(
+                            f'<p style="font-size:11px;color:#94a3b8;padding-top:10px">'
+                            f'Report ID: <code style="color:#0891b2">{log_id}</code></p>',
+                            unsafe_allow_html=True)
+                except Exception as pdf_e:
+                    st.error(f"PDF download error: {pdf_e}")
             except Exception as e:
                 st.error(f"PDF generation error: {e}")
 
@@ -1281,6 +1299,7 @@ st.markdown(f"""
   <div class="sf-copy">
     For educational and research purposes only &nbsp;|&nbsp;
     Not for clinical diagnosis &nbsp;|&nbsp;
+    Final Year CSE Project
   </div>
 </div>
 """, unsafe_allow_html=True)

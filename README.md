@@ -1,78 +1,111 @@
-# 🩸 Hemo Check — AI-Powered Blood Clot Detection & Risk Assessment System
+# Hemo Check — AI-Powered Blood Clot Detection & Risk Assessment System
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue?style=flat-square&logo=python)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0-red?style=flat-square&logo=pytorch)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.28-ff4b4b?style=flat-square&logo=streamlit)
 ![XGBoost](https://img.shields.io/badge/XGBoost-1.7-green?style=flat-square)
+![fpdf2](https://img.shields.io/badge/fpdf2-2.7-orange?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
-> A multi-modal AI diagnostic system that detects blood clots across CT scans, MRI, and ultrasound images — combined with clinical risk prediction and SHAP explainability.
+> A multi-modal AI diagnostic system that detects blood clots from CT scans, MRI, and
+> ultrasound images — combined with clinical risk prediction, Grad-CAM heatmaps,
+> SHAP explainability, and downloadable PDF reports.
 
 ---
 
-## 🖥️ Live Demo
+## Live Demo
 
-> **[Launch App →](https://your-app-name.streamlit.app)**  
-> *(Replace with your Streamlit Cloud URL after deployment)*
-
-![Hemo Check Dashboard](https://img.shields.io/badge/Status-Live-00C896?style=flat-square)
+> **[Launch App on Streamlit Cloud](https://your-app-name.streamlit.app)**
+> *(Replace with your deployed URL)*
 
 ---
 
-## 🧠 What This System Does
+## What Hemo Check Does
 
-| Module | Imaging Type | Disease | Model | Dataset |
-|--------|-------------|---------|-------|---------|
-| Tab 1 | CT Scan | Pulmonary Embolism (PE) | EfficientNet-B0 | RSNA PE 2020 |
-| Tab 2 | MRI | Brain Clot / Stroke | ResNet-50 | Brain MRI (Kaggle) |
-| Tab 3 | Ultrasound | Deep Vein Thrombosis (DVT) | EfficientNet-B2 | Breast Ultrasound |
-| Tab 4 | Clinical Data | General Clot Risk | XGBoost + SHAP | UCI Heart Disease |
+Each scan tab (CT / MRI / Ultrasound) runs a **two-model combined pipeline**:
 
----
-
-## ✨ Key Features
-
-- **Multi-modal detection** — CT, MRI, and Ultrasound image analysis in one app
-- **Clinical risk predictor** — 14 patient features → Low / High risk score
-- **XAI with SHAP** — Waterfall charts explaining every prediction
-- **PDF report generator** — Auto-generated downloadable medical report
-- **Medical-grade UI** — Dark clinical dashboard with ECG monitor animation
-- **Two-phase training** — Pretrain → fine-tune for all deep learning models
+| Step | What happens |
+|------|-------------|
+| 1 | User uploads a scan image |
+| 2 | User fills in patient clinical details (age, BP, cholesterol, symptoms, etc.) |
+| 3 | Deep learning scan model runs (EfficientNet / ResNet) |
+| 4 | Clinical ensemble runs (XGBoost + Random Forest soft voting) |
+| 5 | Symptom severity scored with rule-based scorer |
+| 6 | All three fused into one **Combined AI Assessment** with overall risk score |
+| 7 | Grad-CAM heatmap generated showing model attention on the scan |
+| 8 | SHAP waterfall chart explains clinical feature impact |
+| 9 | Full combined PDF report downloaded — scan + clinical + recommendations |
+| 10 | Prediction saved to SQLite history and audit trail |
 
 ---
 
-## 🗂️ Project Structure
+## Diagnostic Modules
+
+| Tab | Imaging Type | Disease | Model | Dataset |
+|-----|-------------|---------|-------|---------|
+| CT Scan | Chest CT | Pulmonary Embolism | EfficientNet-B0 | RSNA PE 2020 |
+| MRI | Brain MRI | Brain Clot / Stroke | ResNet-50 | Brain MRI (Kaggle) |
+| Ultrasound | Venous Ultrasound | DVT | EfficientNet-B2 | Breast Ultrasound |
+| Clinical Risk | Patient data | General Clot Risk | XGBoost + RF | UCI Heart Disease |
+
+---
+
+## Key Features
+
+- **Combined AI assessment** — scan + clinical + symptom score fused into one risk score
+- **Grad-CAM heatmaps** — visual attention overlay on every scan image
+- **SHAP explainability** — waterfall charts per clinical prediction
+- **Ensemble AI** — XGBoost + Random Forest soft voting with disagreement flagging
+- **Confidence thresholding** — below 70% flagged as inconclusive
+- **Patient history** — SQLite-backed prediction history with risk trend charts
+- **Full audit trail** — every inference logged with timestamp, model version, physician
+- **Combined PDF reports** — scan result + clinical assessment + SHAP + Grad-CAM + recs
+- **Unicode-safe PDF** — DejaVu font downloaded automatically for full character support
+- **MediLab-style UI** — DM Sans + DM Serif Display, teal gradient hero, white cards
+
+---
+
+## Project Structure
 
 ```
 blood_clot_ai/
-│
-├── app.py                        # Main Streamlit app (4-tab UI)
-├── report.py                     # PDF report generator
-├── preprocess.py                 # Data cleaning + feature engineering
-├── train_model.py                # XGBoost + Random Forest training
-├── download_data.py              # Dataset downloader
-├── download_subset.py            # Lightweight dataset subset downloader
-├── requirements.txt
-│
-├── src/
-│   ├── ct_detector.py            # CT scan inference (EfficientNet-B0)
-│   ├── mri_detector.py           # MRI inference (ResNet-50)
-│   └── ultrasound_detector.py    # Ultrasound inference (EfficientNet-B2)
-│
-├── notebooks/
-│   ├── train_ct_model.py         # Colab training — CT EfficientNet
-│   ├── train_mri_model.py        # Colab training — MRI ResNet50
-│   └── train_ultrasound_model.py # Colab training — Ultrasound EfficientNet
-│
-├── data/                         # Datasets (not committed to Git)
-├── models/                       # Trained .pkl and .pth files
-├── plots/                        # EDA charts
-└── reports/                      # Generated PDF reports
+|
+|-- app.py                         # Main Streamlit app (8 tabs)
+|-- report.py                      # Unicode-safe PDF report generator
+|-- preprocess.py                  # Data cleaning + feature engineering
+|-- train_model.py                 # XGBoost + Random Forest training
+|-- download_data.py               # Dataset downloader (OpenML)
+|-- download_subset.py             # Kaggle subset downloader
+|-- requirements.txt
+|-- README.md
+|
+|-- src/
+|   |-- clinical_panel.py          # Reusable clinical form + predictor
+|   |-- combined_analysis.py       # Scan + clinical + symptom fusion
+|   |-- ct_detector.py             # CT scan inference (EfficientNet-B0)
+|   |-- mri_detector.py            # MRI inference (ResNet-50)
+|   |-- ultrasound_detector.py     # Ultrasound inference (EfficientNet-B2)
+|   |-- ensemble.py                # XGBoost + RF soft voting ensemble
+|   |-- gradcam.py                 # Grad-CAM heatmap generator
+|   |-- history.py                 # SQLite prediction history
+|   |-- audit.py                   # CSV audit trail logger
+|   |-- analytics.py               # ROC, confusion matrix, feature importance
+|
+|-- notebooks/
+|   |-- train_ct_model.py          # Colab training - CT EfficientNet-B0
+|   |-- train_mri_model.py         # Colab training - MRI ResNet-50
+|   |-- train_ultrasound_model.py  # Colab training - Ultrasound EfficientNet-B2
+|
+|-- data/                          # Datasets (not committed to Git)
+|-- models/                        # Trained .pkl and .pth files
+|-- fonts/                         # DejaVu fonts (auto-downloaded)
+|-- plots/                         # EDA and analytics charts
+|-- reports/                       # Generated PDF reports
 ```
 
 ---
 
-## ⚙️ Setup & Installation
+## Setup and Installation
 
 ### 1. Clone the repository
 ```bash
@@ -85,85 +118,90 @@ cd blood-clot-ai
 pip install -r requirements.txt
 ```
 
-### 3. Download datasets
+### 3. Download the clinical dataset
 ```bash
-python download_subset.py
+python download_data.py
 ```
 
-### 4. Train the clinical model
+### 4. Preprocess and train the clinical model
 ```bash
 python preprocess.py
 python train_model.py
 ```
 
 ### 5. Train deep learning models (Google Colab — GPU required)
-- Upload `notebooks/train_ct_model.py` → Run on Colab GPU
-- Upload `notebooks/train_mri_model.py` → Run on Colab GPU
-- Upload `notebooks/train_ultrasound_model.py` → Run on Colab GPU
-- Download the `.pth` files → place in `/models/`
+- Upload `notebooks/train_ct_model.py` to Colab, set Runtime to GPU, run
+- Upload `notebooks/train_mri_model.py`, run
+- Upload `notebooks/train_ultrasound_model.py`, run
+- Download the saved `.pth` files and place them in `/models/`
 
 ### 6. Run the app
 ```bash
 streamlit run app.py
 ```
 
+The app auto-downloads DejaVu Unicode fonts on first run for PDF support.
+
 ---
 
-## 🧪 Model Performance
+## Model Performance
 
-| Model | Task | Accuracy | AUC Score |
-|-------|------|----------|-----------|
+| Model | Task | Accuracy | AUC |
+|-------|------|----------|-----|
 | XGBoost | Clinical Risk | ~85% | ~0.91 |
-| EfficientNet-B0 | CT — PE Detection | ~87% | ~0.89 |
-| ResNet-50 | MRI — Brain Clot | ~91% | ~0.94 |
-| EfficientNet-B2 | Ultrasound — DVT | ~83% | ~0.86 |
+| Random Forest | Clinical Risk | ~83% | ~0.88 |
+| Ensemble (XGB+RF) | Clinical Risk | ~86% | ~0.92 |
+| EfficientNet-B0 | CT - PE Detection | ~87% | ~0.89 |
+| ResNet-50 | MRI - Brain Clot | ~91% | ~0.94 |
+| EfficientNet-B2 | Ultrasound - DVT | ~83% | ~0.86 |
 
 ---
 
-## 🧬 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
 | Deep Learning | PyTorch, timm, torchvision |
 | Classical ML | XGBoost, Scikit-learn |
-| Explainability | SHAP |
+| Explainability | SHAP, Grad-CAM |
 | Image Processing | OpenCV, Pillow, Albumentations |
 | Web App | Streamlit |
-| PDF Reports | fpdf2 |
+| PDF Reports | fpdf2 + DejaVu Unicode fonts |
+| Database | SQLite (via Python sqlite3) |
 | Data | Pandas, NumPy |
-| Visualization | Matplotlib, Seaborn |
+| Visualisation | Matplotlib, Seaborn |
 
 ---
 
-## 📊 SHAP Explainability
+## Combined AI Assessment — Fusion Weights
 
-Every clinical prediction includes a SHAP waterfall chart showing:
-- Which features **increased** clot risk (red)
-- Which features **decreased** clot risk (blue)
-- The magnitude of each feature's impact
-
-This makes the AI transparent and interpretable — critical for medical AI applications.
-
----
-
-## ⚠️ Disclaimer
-
-This project is built for **educational and portfolio purposes only**.  
-It is **not** a certified medical device and should **not** be used for real clinical diagnosis.  
-Always consult a qualified healthcare professional for medical decisions.
+| Source | Weight | Why |
+|--------|--------|-----|
+| Scan model | 50% | Direct imaging evidence is primary signal |
+| Clinical ensemble | 35% | Clinical features are well-validated predictors |
+| Symptom score | 15% | Supporting signal, not standalone diagnostic |
 
 ---
 
-## 👨‍💻 Author
+## Disclaimer
 
-Built as an internship/portfolio project demonstrating:
-- End-to-end ML pipeline
-- Computer vision + tabular ML combination
-- Explainable AI (XAI)
-- Full-stack deployment
+This project is built for **educational and portfolio purposes only**.
+It is **not** a certified medical device and must **not** be used for real clinical
+diagnosis. Always consult a qualified healthcare professional for medical decisions.
 
 ---
 
-## 📄 License
+## Author
+
+Built as a final year CSE project demonstrating:
+- End-to-end ML pipeline design
+- Computer vision + tabular ML integration
+- Explainable AI (XAI) with SHAP and Grad-CAM
+- Multi-model fusion and ensemble methods
+- Full-stack deployment with Streamlit
+
+---
+
+## License
 
 MIT License — free to use for educational purposes.
