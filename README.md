@@ -1,4 +1,4 @@
-# 🩸 ClotAI — AI-Powered Blood Clot Detection & Risk Assessment System
+# 🩸 Hemo Check — AI-Powered Blood Clot Detection & Risk Assessment System
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue?style=flat-square&logo=python)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.0-red?style=flat-square&logo=pytorch)
@@ -15,7 +15,7 @@
 > **[Launch App →](https://your-app-name.streamlit.app)**  
 > *(Replace with your Streamlit Cloud URL after deployment)*
 
-![ClotAI Dashboard](https://img.shields.io/badge/Status-Live-00C896?style=flat-square)
+![Hemo Check Dashboard](https://img.shields.io/badge/Status-Live-00C896?style=flat-square)
 
 ---
 
