@@ -1,0 +1,13 @@
+log_id,timestamp,patient_id,scan_type,model_name,model_version,input_summary,result_label,risk_level,confidence,gradcam_generated,report_generated,physician
+LOG-20260625151515-0001,2026-06-25 15:15:15,PT-2024-0001,Ultrasound,EfficientNet-B2,v3.0,,DVT Clot Detected,HIGH,100.0,True,False,Dr. Sharma
+LOG-20260625151930-0002,2026-06-25 15:19:30,PT-2024-0001,Clinical Risk,XGBoost+RF Ensemble,v3.0,,LOW CLOT RISK,VERY LOW,28.5,False,True,Dr. Sharma
+LOG-20260625225212-0003,2026-06-25 22:52:12,PT-2024-0001,MRI Brain,ResNet-50,v3.0,,No Brain Clot Detected,LOW,14.9,True,False,Dr. Sharma
+LOG-20260626224512-0004,2026-06-26 22:45:12,PT-2024-0001,MRI Brain,ResNet-50,v3.0,,No Brain Clot Detected,LOW,14.4,True,False,Dr. Sharma
+LOG-20260627225521-0005,2026-06-27 22:55:21,PT-20260627225518,Clinical Risk,XGBoost+RF Ensemble,v3.0,,Risk: HIGH,HIGH,87.5,False,True,Dr. Sharma
+LOG-20260628000502-0006,2026-06-28 00:05:02,PT-20260628000455,MRI Brain,ResNet-50,v3.0,,High Blood Clot Risk Detected,HIGH,71.2,True,True,Dr. Sharma
+LOG-20260628002420-0007,2026-06-28 00:24:20,PT-20260628002416,MRI Brain,ResNet-50,v3.0,,High Blood Clot Risk Detected,HIGH,70.6,True,True,Dr. Sharma
+LOG-20260628002518-0008,2026-06-28 00:25:18,PT-20260628002514,Ultrasound DVT,EfficientNet-B2,v3.0,,High Blood Clot Risk Detected,HIGH,80.6,True,True,Dr. Sharma
+LOG-20260628002639-0009,2026-06-28 00:26:39,PT-20260628002637,Clinical Risk,XGBoost+RF Ensemble,v3.0,,Risk: HIGH,HIGH,87.5,False,True,Dr. Sharma
+LOG-20260628002752-0010,2026-06-28 00:27:52,PT-20260628002749,CT Scan,EfficientNet-B0,v3.0,,Low Blood Clot Risk,LOW,30.6,True,True,Dr. Sharma
+LOG-20260628103156-0011,2026-06-28 10:31:56,PT-20260628103148,MRI Brain,ResNet-50,v3.0,,Moderate Blood Clot Risk — Monitor,MEDIUM,68.8,True,True,Dr. Sharma
+LOG-20260628104011-0012,2026-06-28 10:40:11,PT-20260628104006,MRI Brain,ResNet-50,v3.0,,Moderate Blood Clot Risk — Monitor,MEDIUM,69.6,True,True,Dr. Sharma
