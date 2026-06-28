@@ -575,7 +575,7 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
             col_a, col_b = st.columns(2, gap="medium")
             with col_a:
                 st.image(img_pil, caption="Original scan",
-                         width="stretch")
+                         use_container_width=True)
             with col_b:
                 banner(scan_res['label'],
                        f"{model_name} · {scan_res['risk_level']} risk · {elapsed}s",
@@ -587,7 +587,7 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
                     from gradcam import generate_gradcam
                     cam_img, _ = generate_gradcam(img_pil, model, model_type)
                     st.image(cam_img, caption="Grad-CAM attention map",
-                             width="stretch")
+                             use_container_width=True)
                     gcam_path_save = f"reports/gradcam_{scan_label.replace(' ','_')}_{pid}.png"
                     cam_img.save(gcam_path_save)
                     gradcam_path = gcam_path_save
@@ -652,12 +652,15 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
                     '<p style="font-size:12px;color:#64748b;margin-bottom:10px">'
                     'Red = risk-increasing · Blue = risk-reducing</p>',
                     unsafe_allow_html=True)
+                shap_path = None  # always defined before try
                 try:
                     explainer   = shap.Explainer(models['xgb'])
                     shap_vals   = explainer(clinical_data['encoded'])
                     shap_path   = f'reports/shap_{scan_label.replace(" ","_")}_{pid}.png'
-                    fig, _      = plt.subplots(figsize=(7, 4))
+                    fig, _      = plt.subplots(figsize=(7, 4),
+                                               facecolor='#ffffff')
                     shap.plots.waterfall(shap_vals[0], show=False)
+                    plt.gcf().set_facecolor('#ffffff')
                     plt.tight_layout()
                     plt.savefig(shap_path, dpi=130, bbox_inches='tight',
                                 facecolor='#ffffff', edgecolor='none')
@@ -688,8 +691,33 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
 
             st.markdown("---")
 
+            # ── Always log first — independent of PDF ───────────────
+            log_prediction(
+                pid, scan_label,
+                combined['overall_label'],
+                combined['overall_risk'],
+                combined['overall_confidence'],
+                model_name, phy
+            )
+            log_id = log_audit(
+                pid, scan_label, model_name,
+                combined['overall_label'],
+                combined['overall_risk'],
+                combined['overall_confidence'],
+                gradcam=gradcam_path is not None,
+                report=True, physician=phy
+            )
+            sh("Audit Record")
+            st.markdown(
+                f'<p style="font-size:11px;color:#64748b">'
+                f'Saved to history and audit trail. '
+                f'Log ID: <code style="color:#0891b2">{log_id}</code></p>',
+                unsafe_allow_html=True)
+
             # ── PDF report ──────────────────────────────────────────
             sh("Download Combined Report")
+            # Collect shap_path safely from local scope
+            _shap_path = shap_path if shap_path is not None else None
             try:
                 pdf_path = generate_combined_report(
                     patient_id      = pid,
@@ -701,52 +729,30 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
                     symptom_result  = symp_res,
                     combined_result = combined,
                     raw_clinical    = raw,
-                    shap_plot_path  = locals().get('shap_path', None),
+                    shap_plot_path  = _shap_path,
                     gradcam_path    = gradcam_path,
                 )
-                # ── Always log — before PDF so it never gets skipped ──
-                log_prediction(
-                    pid, scan_label,
-                    combined['overall_label'],
-                    combined['overall_risk'],
-                    combined['overall_confidence'],
-                    model_name, phy
-                )
-                log_id = log_audit(
-                    pid, scan_label, model_name,
-                    combined['overall_label'],
-                    combined['overall_risk'],
-                    combined['overall_confidence'],
-                    gradcam=gradcam_path is not None,
-                    report=True, physician=phy
-                )
+                # Read bytes into memory — required for Streamlit download
+                with open(pdf_path, 'rb') as _f:
+                    pdf_bytes = _f.read()
 
-                sh("Audit Record")
-                st.markdown(
-                    f'<p style="font-size:11px;color:#64748b">'
-                    f'Saved to history and audit trail. '
-                    f'Log ID: <code style="color:#0891b2">{log_id}</code></p>',
-                    unsafe_allow_html=True)
-
-                sh("Download Combined Report")
-                try:
-                    dl_col, id_col = st.columns([2, 1])
-                    with dl_col:
-                        with open(pdf_path, 'rb') as f:
-                            st.download_button(
-                                "Download Combined PDF Report",
-                                data=f,
-                                file_name=f"Hemo Check_{scan_label.replace(' ','_')}_{pid}.pdf",
-                                mime="application/pdf",
-                                use_container_width=True
-                            )
-                    with id_col:
-                        st.markdown(
-                            f'<p style="font-size:11px;color:#94a3b8;padding-top:10px">'
-                            f'Report ID: <code style="color:#0891b2">{log_id}</code></p>',
-                            unsafe_allow_html=True)
-                except Exception as pdf_e:
-                    st.error(f"PDF download error: {pdf_e}")
+                safe_name = (f"HemoCheck_{scan_label.replace(' ','_')}"
+                             f"_{pid}.pdf")
+                dl_col, id_col = st.columns([2, 1])
+                with dl_col:
+                    st.download_button(
+                        label="Download Combined PDF Report",
+                        data=pdf_bytes,
+                        file_name=safe_name,
+                        mime="application/pdf",
+                        use_container_width=True,
+                        key=f"dl_{scan_label}_{pid}_{int(time.time())}"
+                    )
+                with id_col:
+                    st.markdown(
+                        f'<p style="font-size:11px;color:#94a3b8;padding-top:10px">'
+                        f'Report ID: <code style="color:#0891b2">{log_id}</code></p>',
+                        unsafe_allow_html=True)
             except Exception as e:
                 st.error(f"PDF generation error: {e}")
 
@@ -1105,12 +1111,15 @@ with tab_risk:
         ])
 
         sh("SHAP Feature Importance")
+        shap_path = None  # always defined before try
         try:
             explainer   = shap.Explainer(models['xgb'])
             shap_vals   = explainer(clinical_data_r['encoded'])
             shap_path   = f'reports/shap_clinical_{pid}.png'
-            fig, _      = plt.subplots(figsize=(10, 5))
+            fig, _      = plt.subplots(figsize=(10, 5),
+                                       facecolor='#ffffff')
             shap.plots.waterfall(shap_vals[0], show=False)
+            plt.gcf().set_facecolor('#ffffff')
             plt.tight_layout()
             plt.savefig(shap_path, dpi=150, bbox_inches='tight',
                         facecolor='#ffffff', edgecolor='none')
@@ -1132,12 +1141,18 @@ with tab_risk:
             confidence=conf,
             shap_plot_path=shap_path
         )
+        with open(rpt, 'rb') as _f:
+            rpt_bytes = _f.read()
         dc, lc = st.columns(2)
         with dc:
-            with open(rpt, 'rb') as f:
-                st.download_button("Download PDF Report", data=f,
-                    file_name="Hemo Check_Clinical_Report.pdf",
-                    mime="application/pdf", use_container_width=True)
+            st.download_button(
+                "Download PDF Report",
+                data=rpt_bytes,
+                file_name="HemoCheck_Clinical_Report.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                key=f"dl_clinical_{pid}_{int(time.time())}"
+            )
         with lc:
             st.markdown(
                 f'<p style="font-size:11px;color:#94a3b8;padding-top:10px">'
@@ -1174,14 +1189,35 @@ with tab_hist:
             rc_c = df_h['risk_level'].value_counts()
             cmap = {'HIGH':'#e11d48','MEDIUM':'#d97706','LOW':'#16a34a',
                     'VERY LOW':'#0891b2','INCONCLUSIVE':'#94a3b8'}
-            fig, ax = plt.subplots(figsize=(7, 3.5))
-            ax.barh(rc_c.index, rc_c.values,
-                    color=[cmap.get(r,'#94a3b8') for r in rc_c.index], height=0.5)
-            for i, v in enumerate(rc_c.values):
-                ax.text(v + 0.05, i, str(v), va='center', fontsize=10, color='#475569')
-            ax.set_xlabel('Number of predictions', fontsize=10)
-            ax.set_title('Risk Level Distribution', fontsize=12,
-                         color='#0f172a', pad=10, fontweight='500')
+            fig, ax = plt.subplots(figsize=(7, 3.5),
+                                   facecolor='#ffffff')
+            ax.set_facecolor('#ffffff')
+            bars = ax.barh(
+                rc_c.index, rc_c.values,
+                color=[cmap.get(r,'#94a3b8') for r in rc_c.index],
+                height=0.5, edgecolor='none'
+            )
+            for bar in bars:
+                w = bar.get_width()
+                ax.text(w + 0.05,
+                        bar.get_y() + bar.get_height() / 2,
+                        str(int(w)), va='center',
+                        fontsize=10, color='#475569',
+                        fontweight='500')
+            ax.set_xlabel('Number of predictions',
+                          fontsize=10, color='#475569')
+            ax.set_title('Risk Level Distribution',
+                         fontsize=12, color='#0f172a',
+                         pad=12, fontweight='600', loc='left')
+            ax.tick_params(colors='#64748b', length=3)
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['left'].set_color('#e2e8f0')
+            ax.spines['bottom'].set_color('#e2e8f0')
+            ax.set_axisbelow(True)
+            ax.grid(axis='x', color='#f1f5f9', linewidth=1)
+            ax.grid(axis='y', visible=False)
+            ax.set_xlim(0, rc_c.max() * 1.2)
             plt.tight_layout()
             st.pyplot(fig, use_container_width=True)
             plt.close()
@@ -1225,19 +1261,19 @@ with tab_ana:
             roc_p = plot_roc_comparison(
                 {'XGBoost':models['xgb'],'Random Forest':models['rf']},
                 X_test, y_test)
-            st.image(roc_p, width="stretch")
+            st.image(roc_p, use_container_width=True)
             ca2, cb2 = st.columns(2)
             with ca2:
                 sh("Confusion Matrix")
                 cm_p = plot_confusion_matrix(xm['cm'], 'XGBoost')
-                st.image(cm_p, width="stretch")
+                st.image(cm_p, use_container_width=True)
             with cb2:
                 sh("Feature Importance")
                 fi_p = plot_feature_importance(models['xgb'], list(X_test.columns))
-                st.image(fi_p, width="stretch")
+                st.image(fi_p, use_container_width=True)
             sh("Precision-Recall Curve")
             pr_p = plot_precision_recall(models['xgb'], X_test, y_test)
-            st.image(pr_p, width="stretch")
+            st.image(pr_p, use_container_width=True)
         except FileNotFoundError:
             st.warning("Run preprocess.py and train_model.py first.")
         except Exception as e:
@@ -1268,7 +1304,7 @@ with tab_audit:
             csv_p = export_audit_csv()
             with open(csv_p, 'rb') as f:
                 st.download_button("Export CSV", data=f,
-                    file_name="Hemo Check_audit_log.csv",
+                    file_name="HemoCheck_audit_log.csv",
                     mime="text/csv", use_container_width=True)
         except Exception:
             pass

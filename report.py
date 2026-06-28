@@ -70,7 +70,7 @@ MUTED  = (100, 116, 139)
 TEXT   = ( 30,  41,  59)
 
 
-class HemoCheckReport(FPDF):
+class ClotAIReport(FPDF):
 
     def __init__(self):
         super().__init__()
@@ -87,26 +87,39 @@ class HemoCheckReport(FPDF):
 
     def header(self):
         self.set_fill_color(*NAVY)
-        self.rect(0, 0, 210, 20, 'F')
-        logo_path = "assets/favicon.png"
+        self.rect(0, 0, 210, 22, 'F')
+
+        # Logo image if available
+        logo_path = 'assets/favicon.png'
         if os.path.exists(logo_path):
-            self.image(logo_path, x=10, y=3, w=14)
+            try:
+                self.image(logo_path, x=8, y=3, w=16, h=16)
+            except Exception:
+                pass
+            name_x = 27
+        else:
+            self.set_fill_color(*TEAL)
+            self.ellipse(10, 5, 12, 12, 'F')
+            name_x = 26
+
         self._font('B', 13)
         self.set_text_color(*WHITE)
-        self.set_xy(28, 5)
+        self.set_xy(name_x, 5)
         self.cell(80, 6, 'Hemo Check', ln=0)
         self._font('', 8)
         self.set_text_color(186, 230, 253)
-        self.set_xy(26, 12)
-        self.cell(80, 5, 'Diagnostic Intelligence System  |  v3.0', ln=0)
+        self.set_xy(name_x, 12)
+        self.cell(80, 5,
+                  'Blood Clot Diagnostic Intelligence System  |  v3.0',
+                  ln=0)
         self._font('', 8)
         self.set_text_color(186, 230, 253)
-        self.set_xy(130, 8)
+        self.set_xy(130, 9)
         self.cell(70, 6,
                   _s(f'Generated: {datetime.now().strftime("%d %b %Y  %H:%M")}'),
                   align='R')
         self.set_text_color(*TEXT)
-        self.ln(22)
+        self.ln(24)
 
     def footer(self):
         self.set_y(-14)
@@ -214,12 +227,12 @@ def generate_combined_report(
     gradcam_path   : str = None,
 ) -> str:
 
-    pdf = HemoCheckReport()
+    pdf = ClotAIReport()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=18)
     pdf.set_margins(10, 10, 10)
 
-    report_id = f'Hemo Check-{datetime.now().strftime("%Y%m%d%H%M%S")}'
+    report_id = f'HEMOCHECK-{datetime.now().strftime("%Y%m%d%H%M%S")}'
     rl_color  = {
         'HIGH': RED, 'MEDIUM': AMBER,
         'LOW': GREEN, 'VERY LOW': TEAL, 'INCONCLUSIVE': MUTED,
@@ -407,7 +420,7 @@ def generate_combined_report(
            'qualified healthcare professional for medical evaluation.'))
 
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename  = (f'reports/Hemo Check_{scan_type.replace(" ", "_")}'
+    filename  = (f'reports/HemoCheck_{scan_type.replace(" ", "_")}'
                  f'_{patient_id}_{timestamp}.pdf')
     pdf.output(filename)
     print(f'Report saved: {filename}')
@@ -418,7 +431,7 @@ def generate_combined_report(
 def generate_report(patient_data: dict, prediction: int,
                     confidence: float,
                     shap_plot_path: str = None) -> str:
-    pdf = HemoCheckReport()
+    pdf = ClotAIReport()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=18)
     rl = 'HIGH' if prediction == 1 else 'LOW'
@@ -444,6 +457,6 @@ def generate_report(patient_data: dict, prediction: int,
         _s('This report is for educational purposes only. '
            'Not a substitute for medical advice.'))
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename  = f'reports/Hemo Check_Clinical_{timestamp}.pdf'
+    filename  = f'reports/HemoCheck_Clinical_{timestamp}.pdf'
     pdf.output(filename)
     return filename
