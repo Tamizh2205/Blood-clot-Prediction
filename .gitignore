@@ -3,9 +3,6 @@ data/
 reports/
 plots/
 
-# Models — too large for GitHub (use Git LFS or share separately)
-models/*.pth
-models/*.pkl
 
 # Python
 __pycache__/

@@ -16,8 +16,7 @@
 ## Live Demo
 
 > **[Launch App on Streamlit Cloud](https://your-app-name.streamlit.app)**
-> *(Replace with your deployed URL)*
-
+> *https://hemocheck.streamlit.app/*
 ---
 
 ## What Hemo Check Does
