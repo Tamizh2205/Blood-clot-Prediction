@@ -782,26 +782,117 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
 # ══════════════════════════════════════════════════════════════════
 with tab_home:
     st.markdown(f"""
-    <div class="hero">
-      <div style="position:relative;max-width:680px">
-        <div class="hero-eyebrow">AI-Powered Medical Diagnostics</div>
-        <div class="hero-title">Early <span>Blood Clot</span><br>Detection &amp; Risk<br>Assessment</div>
-        <div class="hero-desc">
-          Hemo Check is a multi-modal AI diagnostic system that combines deep learning image
-          analysis with clinical risk prediction — delivering fast, explainable results with
-          Grad-CAM heatmaps and SHAP feature importance.
+    <div class="hero" id="hero-top">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap">
+
+        <div style="flex:1;min-width:280px;max-width:580px">
+          <div class="hero-eyebrow">AI-Powered Medical Diagnostics</div>
+          <div class="hero-title">Early <span>Blood Clot</span><br>Detection &amp; Risk<br>Assessment</div>
+          <div class="hero-desc">
+            Hemo Check is a multi-modal AI diagnostic system that combines deep learning image
+            analysis with clinical risk prediction — delivering fast, explainable results with
+            Grad-CAM heatmaps and SHAP feature importance.
+          </div>
+          <div class="hero-btns">
+            <button class="hero-btn-p"
+              onclick="window.parent.document.querySelectorAll('[data-baseweb=tab]')[1].click()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" style="vertical-align:-3px">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              Start Diagnosis
+            </button>
+            <button class="hero-btn-s"
+              onclick="document.getElementById('how-it-works').scrollIntoView({{behavior:'smooth'}})">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24" style="vertical-align:-3px">
+                <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+              </svg>
+              How It Works
+            </button>
+          </div>
+          <div class="hero-stats">
+            <div><div class="hs-num">4</div><div class="hs-lbl">DIAGNOSTIC MODULES</div></div>
+            <div><div class="hs-num">3</div><div class="hs-lbl">DEEP LEARNING MODELS</div></div>
+            <div><div class="hs-num">SHAP</div><div class="hs-lbl">AI EXPLAINABILITY</div></div>
+            <div><div class="hs-num">Grad-CAM</div><div class="hs-lbl">VISUAL ATTENTION</div></div>
+            <div><div class="hs-num">PDF</div><div class="hs-lbl">REPORT EXPORT</div></div>
+          </div>
         </div>
-        <div class="hero-btns">
-          <button class="hero-btn-p">Start Diagnosis</button>
-          <button class="hero-btn-s">How It Works</button>
+
+        <div style="flex-shrink:0;display:flex;align-items:center;justify-content:center">
+          <svg width="260" height="260" viewBox="0 0 280 280" fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-label="Blood vessel with clot AI detection illustration">
+            <circle cx="140" cy="140" r="130" fill="rgba(255,255,255,0.05)"
+              stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <circle cx="140" cy="140" r="108" fill="rgba(255,255,255,0.03)"
+              stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+            <path d="M 40 100 Q 80 80 140 90 Q 200 100 240 85"
+              stroke="rgba(255,255,255,0.2)" stroke-width="44" stroke-linecap="round" fill="none"/>
+            <path d="M 40 100 Q 80 80 140 90 Q 200 100 240 85"
+              stroke="#b91c1c" stroke-width="38" stroke-linecap="round" fill="none"/>
+            <path d="M 40 100 Q 80 80 140 90 Q 200 100 240 85"
+              stroke="#dc2626" stroke-width="28" stroke-linecap="round" fill="none"/>
+            <path d="M 40 97 Q 80 77 140 87 Q 200 97 240 82"
+              stroke="rgba(252,165,165,0.3)" stroke-width="7" stroke-linecap="round" fill="none"/>
+            <path d="M 40 180 Q 90 170 140 178 Q 190 186 240 172"
+              stroke="rgba(255,255,255,0.2)" stroke-width="44" stroke-linecap="round" fill="none"/>
+            <path d="M 40 180 Q 90 170 140 178 Q 190 186 240 172"
+              stroke="#b91c1c" stroke-width="38" stroke-linecap="round" fill="none"/>
+            <path d="M 40 180 Q 90 170 140 178 Q 190 186 240 172"
+              stroke="#dc2626" stroke-width="28" stroke-linecap="round" fill="none"/>
+            <path d="M 40 177 Q 90 167 140 175 Q 190 183 240 169"
+              stroke="rgba(252,165,165,0.3)" stroke-width="7" stroke-linecap="round" fill="none"/>
+            <path d="M 140 90 Q 136 134 140 178"
+              stroke="rgba(255,255,255,0.18)" stroke-width="34" stroke-linecap="round" fill="none"/>
+            <path d="M 140 90 Q 136 134 140 178"
+              stroke="#b91c1c" stroke-width="28" stroke-linecap="round" fill="none"/>
+            <path d="M 140 90 Q 136 134 140 178"
+              stroke="#dc2626" stroke-width="20" stroke-linecap="round" fill="none"/>
+            <ellipse cx="140" cy="134" rx="26" ry="21" fill="#7f1d1d" opacity="0.95"/>
+            <ellipse cx="133" cy="128" rx="11" ry="8" fill="#991b1b" opacity="0.65"/>
+            <ellipse cx="148" cy="140" rx="9" ry="7" fill="#991b1b" opacity="0.55"/>
+            <circle cx="130" cy="130" r="2.5" fill="#fca5a5" opacity="0.4"/>
+            <circle cx="144" cy="126" r="2" fill="#fca5a5" opacity="0.35"/>
+            <circle cx="150" cy="136" r="1.8" fill="#fca5a5" opacity="0.3"/>
+            <circle cx="138" cy="142" r="2" fill="#fca5a5" opacity="0.35"/>
+            <circle cx="140" cy="134" r="35" stroke="#fbbf24" stroke-width="2"
+              stroke-dasharray="6 4" fill="none" opacity="0.85">
+              <animateTransform attributeName="transform" type="rotate"
+                from="0 140 134" to="360 140 134" dur="8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="68"  cy="97"  r="7"   fill="#fca5a5" opacity="0.7"/>
+            <circle cx="68"  cy="97"  r="3.8" fill="#dc2626" opacity="0.45"/>
+            <circle cx="88"  cy="92"  r="5.5" fill="#fca5a5" opacity="0.6"/>
+            <circle cx="88"  cy="92"  r="3"   fill="#dc2626" opacity="0.4"/>
+            <circle cx="60"  cy="178" r="6.5" fill="#fca5a5" opacity="0.65"/>
+            <circle cx="60"  cy="178" r="3.5" fill="#dc2626" opacity="0.45"/>
+            <circle cx="82"  cy="173" r="5"   fill="#fca5a5" opacity="0.55"/>
+            <circle cx="200" cy="89"  r="6"   fill="#fca5a5" opacity="0.65"/>
+            <circle cx="200" cy="89"  r="3.2" fill="#dc2626" opacity="0.45"/>
+            <circle cx="220" cy="84"  r="5"   fill="#fca5a5" opacity="0.55"/>
+            <circle cx="198" cy="175" r="6"   fill="#fca5a5" opacity="0.6"/>
+            <circle cx="218" cy="170" r="4.5" fill="#fca5a5" opacity="0.5"/>
+            <line x1="30"  y1="134" x2="98"  y2="134"
+              stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+            <line x1="182" y1="134" x2="250" y2="134"
+              stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+            <circle cx="30"  cy="134" r="3" fill="#7dd3fc" opacity="0.9"/>
+            <circle cx="250" cy="134" r="3" fill="#7dd3fc" opacity="0.9"/>
+            <rect x="84" y="164" width="112" height="20" rx="10"
+              fill="rgba(239,68,68,0.2)" stroke="#f87171" stroke-width="1"/>
+            <text x="140" y="178" text-anchor="middle" fill="#fca5a5"
+              font-size="10" font-family="sans-serif" font-weight="600"
+              letter-spacing="0.5">CLOT DETECTED</text>
+            <rect x="94" y="44" width="92" height="19" rx="9"
+              fill="rgba(125,211,252,0.15)" stroke="#7dd3fc" stroke-width="1"/>
+            <text x="140" y="57" text-anchor="middle" fill="#bae6fd"
+              font-size="9" font-family="sans-serif" font-weight="500"
+              letter-spacing="0.4">AI ANALYSIS ACTIVE</text>
+          </svg>
         </div>
-        <div class="hero-stats">
-          <div><div class="hs-num">4</div><div class="hs-lbl">DIAGNOSTIC MODULES</div></div>
-          <div><div class="hs-num">3</div><div class="hs-lbl">DEEP LEARNING MODELS</div></div>
-          <div><div class="hs-num">SHAP</div><div class="hs-lbl">AI EXPLAINABILITY</div></div>
-          <div><div class="hs-num">Grad-CAM</div><div class="hs-lbl">VISUAL ATTENTION</div></div>
-          <div><div class="hs-num">PDF</div><div class="hs-lbl">REPORT EXPORT</div></div>
-        </div>
+
       </div>
     </div>
 
@@ -812,7 +903,7 @@ with tab_home:
       <div class="stat-item"><div class="stat-num">100%</div><div class="stat-lbl">AUDIT LOGGED</div></div>
     </div>
 
-    <div class="section-alt">
+    <div class="section-alt" id="how-it-works">
       <div style="padding:0 0 0 0">
         <div class="section-label">How It Works</div>
         <div class="section-title">Four diagnostic modules,<br>one unified platform</div>
