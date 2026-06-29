@@ -784,7 +784,6 @@ with tab_home:
     st.markdown(f"""
     <div class="hero" id="hero-top">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap">
-
         <div style="flex:1;min-width:280px;max-width:580px">
           <div class="hero-eyebrow">AI-Powered Medical Diagnostics</div>
           <div class="hero-title">Early <span>Blood Clot</span><br>Detection &amp; Risk<br>Assessment</div>
@@ -793,25 +792,8 @@ with tab_home:
             analysis with clinical risk prediction — delivering fast, explainable results with
             Grad-CAM heatmaps and SHAP feature importance.
           </div>
-          <div class="hero-btns">
-            <button class="hero-btn-p"
-              onclick="window.parent.document.querySelectorAll('[data-baseweb=tab]')[1].click()">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24" style="vertical-align:-3px">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
-              Start Diagnosis
-            </button>
-            <button class="hero-btn-s"
-              onclick="document.getElementById('how-it-works').scrollIntoView({{behavior:'smooth'}})">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24" style="vertical-align:-3px">
-                <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
-              </svg>
-              How It Works
-            </button>
-          </div>
-          <div class="hero-stats">
+          <div id="how-it-works-anchor"></div>
+          <div class="hero-stats" style="margin-top:20px">
             <div><div class="hs-num">4</div><div class="hs-lbl">DIAGNOSTIC MODULES</div></div>
             <div><div class="hs-num">3</div><div class="hs-lbl">DEEP LEARNING MODELS</div></div>
             <div><div class="hs-num">SHAP</div><div class="hs-lbl">AI EXPLAINABILITY</div></div>
@@ -819,7 +801,6 @@ with tab_home:
             <div><div class="hs-num">PDF</div><div class="hs-lbl">REPORT EXPORT</div></div>
           </div>
         </div>
-
         <div style="flex-shrink:0;display:flex;align-items:center;justify-content:center">
           <svg width="260" height="260" viewBox="0 0 280 280" fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -892,121 +873,40 @@ with tab_home:
               letter-spacing="0.4">AI ANALYSIS ACTIVE</text>
           </svg>
         </div>
-
-      </div>
-    </div>
-
-    <div class="stat-strip">
-      <div class="stat-item"><div class="stat-num">~87%</div><div class="stat-lbl">CT MODEL ACCURACY</div></div>
-      <div class="stat-item"><div class="stat-num">0.91</div><div class="stat-lbl">AUC SCORE (CLINICAL)</div></div>
-      <div class="stat-item"><div class="stat-num">&lt;0.5s</div><div class="stat-lbl">INFERENCE TIME</div></div>
-      <div class="stat-item"><div class="stat-num">100%</div><div class="stat-lbl">AUDIT LOGGED</div></div>
-    </div>
-
-    <div class="section-alt" id="how-it-works">
-      <div style="padding:0 0 0 0">
-        <div class="section-label">How It Works</div>
-        <div class="section-title">Four diagnostic modules,<br>one unified platform</div>
-        <div class="section-desc">Upload a scan, provide clinical details — Hemo Check runs both the imaging AI
-        and the clinical risk model together, fusing results into one combined assessment.</div>
-        <div class="module-grid">
-          <div class="module-card">
-            <div class="module-icon fi-blue"><i class="ti ti-lungs"></i></div>
-            <div>
-              <div class="module-title">CT Scan — Pulmonary Embolism</div>
-              <div class="module-model">EfficientNet-B0 · RSNA 2020</div>
-              <div class="module-desc">Detects blood clots in the pulmonary arteries from chest CT scans.
-              Combined with clinical risk for a unified PE assessment.</div>
-            </div>
-          </div>
-          <div class="module-card">
-            <div class="module-icon fi-purple"><i class="ti ti-brain"></i></div>
-            <div>
-              <div class="module-title">MRI — Brain Clot and Stroke</div>
-              <div class="module-model">ResNet-50 · Brain MRI Dataset</div>
-              <div class="module-desc">Identifies brain clot indicators from MRI scans,
-              fused with patient clinical data for a complete stroke risk picture.</div>
-            </div>
-          </div>
-          <div class="module-card">
-            <div class="module-icon fi-teal"><i class="ti ti-wave-sine"></i></div>
-            <div>
-              <div class="module-title">Ultrasound — DVT Detection</div>
-              <div class="module-model">EfficientNet-B2 · Ultrasound Dataset</div>
-              <div class="module-desc">Detects DVT markers in venous ultrasound images,
-              combined with clinical features for integrated risk scoring.</div>
-            </div>
-          </div>
-          <div class="module-card">
-            <div class="module-icon fi-amber"><i class="ti ti-clipboard-list"></i></div>
-            <div>
-              <div class="module-title">Clinical Risk — Ensemble AI</div>
-              <div class="module-model">XGBoost + Random Forest</div>
-              <div class="module-desc">Standalone clinical risk predictor using 14 patient
-              features. Also embedded in every scan tab for combined analysis.</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-label">Key Features</div>
-      <div class="section-title">What makes Hemo Check faculty-grade</div>
-      <div class="section-desc">Built to demonstrate end-to-end ML engineering,
-      explainable AI, and full-stack deployment in a real healthcare context.</div>
-      <div class="feat-grid">
-        <div class="feat-card">
-          <div class="feat-icon-wrap fi-teal"><i class="ti ti-eye"></i></div>
-          <div class="feat-title">Grad-CAM Heatmaps</div>
-          <div class="feat-desc">Visual attention maps overlaid on CT, MRI, and ultrasound images
-          show exactly where the model focused to reach its decision.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon-wrap fi-blue"><i class="ti ti-chart-bar"></i></div>
-          <div class="feat-title">SHAP Explainability</div>
-          <div class="feat-desc">SHAP waterfall charts decompose every clinical risk prediction,
-          showing which patient features increased or decreased the risk score.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon-wrap fi-purple"><i class="ti ti-git-merge"></i></div>
-          <div class="feat-title">Fused AI Assessment</div>
-          <div class="feat-desc">Scan model + clinical ensemble + symptom scorer combined
-          with weighted fusion into one overall risk score per patient.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon-wrap fi-green"><i class="ti ti-shield-check"></i></div>
-          <div class="feat-title">Confidence Thresholding</div>
-          <div class="feat-desc">Predictions below 70% confidence are flagged as inconclusive
-          rather than forced into a binary label — a critical safety feature.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon-wrap fi-amber"><i class="ti ti-history"></i></div>
-          <div class="feat-title">Patient History</div>
-          <div class="feat-desc">Every prediction stored in SQLite with patient ID, scan type,
-          result, confidence, and physician. Risk trend charts per patient.</div>
-        </div>
-        <div class="feat-card">
-          <div class="feat-icon-wrap fi-red"><i class="ti ti-file-export"></i></div>
-          <div class="feat-title">PDF Report and Audit</div>
-          <div class="feat-desc">Combined PDF reports include scan result, clinical assessment,
-          SHAP chart, Grad-CAM, and recommendations in one document.</div>
-        </div>
-      </div>
-    </div>
-
-    <div style="background:#fff;border-top:1px solid #e2e8f0;padding:24px 40px">
-      <div class="disclaimer">
-        <div class="disc-icon"><i class="ti ti-info-circle"></i></div>
-        <div>
-          <div class="disc-title">Educational and Research Project</div>
-          <div class="disc-body">Hemo Check is developed as a final year CSE project demonstrating
-          AI/ML engineering skills. It is not a certified medical device and must not be used
-          for real clinical diagnosis. Always consult a qualified healthcare professional.</div>
-        </div>
       </div>
     </div>
     """, unsafe_allow_html=True)
+
+    # ── Hero action buttons — real Streamlit buttons (onclick works) ──
+    st.markdown("""
+    <style>
+    div[data-testid="column"]:nth-child(1) .stButton>button{
+      background:#0891b2 !important;color:#fff !important;
+      font-size:14px !important;font-weight:600 !important;
+      padding:12px 28px !important;border-radius:10px !important;
+      width:100%;border:none !important;
+    }
+    div[data-testid="column"]:nth-child(2) .stButton>button{
+      background:transparent !important;color:#0891b2 !important;
+      font-size:14px !important;font-weight:500 !important;
+      padding:12px 28px !important;border-radius:10px !important;
+      width:100%;border:2px solid #a5f3fc !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    hb1, hb2, hb3 = st.columns([1, 1, 3])
+    with hb1:
+        start_diag = st.button("Start Diagnosis", key="hero_start", use_container_width=True)
+    with hb2:
+        how_works  = st.button("How It Works",    key="hero_how",   use_container_width=True)
+
+    if start_diag:
+        st.session_state['go_to_ct'] = True
+        st.info("Use the **CT Scan — Pulmonary Embolism** tab above to begin your diagnosis.")
+
+    if how_works:
+        st.info("Scroll down to see how all four diagnostic modules work together.")
 
 
 # ══════════════════════════════════════════════════════════════════
