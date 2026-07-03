@@ -306,6 +306,171 @@ section[data-testid="stSidebar"]{background:#fff !important;border-right:1px sol
 .stProgress>div>div>div{background:#0891b2 !important}
 
 div[data-testid="stMarkdownContainer"]{color:#1e293b !important}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — tablets (max 1024px)
+══════════════════════════════════════════════════════ */
+@media (max-width:1024px){
+  .topbar{padding:0 20px;height:56px}
+  .hero{padding:40px 20px 36px}
+  .hero-title{font-size:34px}
+  .hero-stats{gap:20px}
+  .hs-num{font-size:22px}
+  .stat-strip{padding:28px 20px;grid-template-columns:repeat(2,1fr)}
+  .stat-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.15);padding:12px 0}
+  .stat-item:nth-child(2n){border-right:none}
+  .section{padding:36px 20px}
+  .section-alt{padding:36px 20px}
+  .feat-grid{grid-template-columns:repeat(2,1fr)}
+  .module-grid{grid-template-columns:1fr}
+  .site-footer{padding:24px 20px;flex-direction:column;gap:12px;text-align:center}
+  .stTabs [data-baseweb="tab-list"]{padding:0 12px !important}
+  .stTabs [data-baseweb="tab"]{padding:10px 10px !important;font-size:11px !important}
+  .stTabs [data-baseweb="tab-panel"]{padding:20px 16px !important}
+  .m-grid{grid-template-columns:1fr 1fr}
+  .m-grid-3{grid-template-columns:1fr 1fr}
+  .contrib-wrap{padding:12px 14px}
+  .scan-summary{padding:14px 16px}
+  .rec-list{padding:14px 16px}
+  .s-card{padding:16px}
+  .section-title{font-size:24px}
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — mobile (max 768px)
+══════════════════════════════════════════════════════ */
+@media (max-width:768px){
+  /* topbar */
+  .topbar{padding:0 14px;height:52px;flex-wrap:wrap}
+  .nav-links{display:none}
+  .brand-name{font-size:16px}
+  .brand-tag{font-size:9px}
+  .nav-badge{display:none}
+
+  /* hero */
+  .hero{padding:28px 16px 24px}
+  .hero-title{font-size:26px;line-height:1.25}
+  .hero-desc{font-size:13px}
+  .hero-stats{gap:14px;flex-wrap:wrap;padding-top:20px;margin-top:20px}
+  .hs-num{font-size:18px}
+  .hs-lbl{font-size:9px}
+  .hero-eyebrow{font-size:10px;padding:4px 10px}
+
+  /* hero SVG illustration — hide on very small screens */
+  .hero>div>div:last-child{display:none}
+
+  /* stat strip */
+  .stat-strip{grid-template-columns:repeat(2,1fr);padding:20px 16px;gap:0}
+  .stat-item{padding:12px 8px;border-right:none;border-bottom:1px solid rgba(255,255,255,.12)}
+  .stat-num{font-size:24px}
+  .stat-lbl{font-size:10px}
+
+  /* sections */
+  .section{padding:28px 16px}
+  .section-alt{padding:28px 16px}
+  .section-title{font-size:22px}
+  .section-desc{font-size:13px;margin-bottom:24px}
+  .section-label{font-size:10px}
+
+  /* grids — single column on mobile */
+  .feat-grid{grid-template-columns:1fr}
+  .module-grid{grid-template-columns:1fr}
+  .module-card{flex-direction:column;gap:12px;padding:18px}
+  .module-icon{width:44px;height:44px;font-size:20px}
+  .feat-card{padding:20px 16px}
+  .feat-icon-wrap{width:40px;height:40px;font-size:18px}
+
+  /* tabs */
+  .stTabs [data-baseweb="tab-list"]{padding:0 8px !important;overflow-x:auto !important;flex-wrap:nowrap !important}
+  .stTabs [data-baseweb="tab"]{padding:9px 8px !important;font-size:10px !important;white-space:nowrap !important}
+  .stTabs [data-baseweb="tab-panel"]{padding:16px 12px !important}
+
+  /* metric grid */
+  .m-grid{grid-template-columns:1fr 1fr}
+  .m-grid-3{grid-template-columns:1fr 1fr}
+  .m-val{font-size:16px}
+  .m-lbl{font-size:9px}
+
+  /* result banners */
+  .r-title{font-size:14px}
+  .r-sub{font-size:11px}
+  .r-combined .r-title{font-size:16px}
+
+  /* contribution bars */
+  .contrib-wrap{padding:12px}
+  .contrib-label{font-size:11px}
+
+  /* scan summary */
+  .scan-summary{padding:12px}
+  .ss-head{font-size:12px}
+  .ss-row{font-size:11px}
+  .ss-key{font-size:10px}
+  .ss-val{font-size:11px}
+
+  /* patient block */
+  .pt-block{padding:12px}
+  .pt-label{font-size:9px}
+  .pt-row{font-size:11px}
+
+  /* recommendation list */
+  .rec-list{padding:12px}
+  .rec-head{font-size:12px}
+  .rec-item{font-size:11px}
+  .rec-num{width:18px;height:18px;font-size:9px}
+
+  /* s-divider */
+  .s-divider{font-size:9px;margin:14px 0 10px}
+
+  /* disclaimer */
+  .disclaimer{flex-direction:column;gap:8px;padding:12px}
+  .disc-title{font-size:12px}
+  .disc-body{font-size:11px}
+
+  /* footer */
+  .site-footer{padding:20px 16px;flex-direction:column;gap:10px;text-align:center}
+  .sf-brand{font-size:16px}
+  .sf-copy{font-size:10px}
+
+  /* info bar */
+  .info-bar{font-size:11px;padding:10px 12px}
+
+  /* sidebar */
+  section[data-testid="stSidebar"]{min-width:260px !important}
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — small mobile (max 480px)
+══════════════════════════════════════════════════════ */
+@media (max-width:480px){
+  .hero-title{font-size:22px}
+  .stat-strip{grid-template-columns:1fr 1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .m-grid{grid-template-columns:1fr}
+  .m-grid-3{grid-template-columns:1fr}
+  .stTabs [data-baseweb="tab"]{font-size:9px !important;padding:8px 6px !important}
+  .r-combined>div{flex-direction:column;gap:12px}
+  .r-combined>div>div:last-child{width:100%;text-align:left}
+}
+
+/* ── Streamlit columns stack on mobile ── */
+@media (max-width:768px){
+  [data-testid="column"]{
+    min-width:100% !important;
+    flex:0 0 100% !important;
+    width:100% !important;
+  }
+  [data-testid="stHorizontalBlock"]{
+    flex-wrap:wrap !important;
+  }
+  /* file uploader mobile */
+  .stFileUploader>div{padding:16px !important}
+  /* slider labels */
+  .stSlider label{font-size:11px !important}
+  .stSelectbox label{font-size:11px !important}
+  /* buttons full width on mobile */
+  .stButton>button{width:100% !important;font-size:12px !important}
+  .stDownloadButton>button{width:100% !important;font-size:12px !important}
+}
 </style>
 """, unsafe_allow_html=True)
 
