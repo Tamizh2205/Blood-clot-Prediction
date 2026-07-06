@@ -13,8 +13,6 @@ os.makedirs('plots',   exist_ok=True)
 os.makedirs('data',    exist_ok=True)
 
 from report          import generate_combined_report, generate_report
-from history         import log_prediction, get_all_history
-from audit           import log_audit, get_audit_log, export_audit_csv
 from ensemble        import load_ensemble, ensemble_predict, get_model_disagreement_note
 from analytics       import (compute_metrics, plot_roc_comparison,
                               plot_precision_recall, plot_confusion_matrix,
@@ -857,27 +855,6 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
             st.markdown("---")
 
             # ── Always log first — independent of PDF ───────────────
-            log_prediction(
-                pid, scan_label,
-                combined['overall_label'],
-                combined['overall_risk'],
-                combined['overall_confidence'],
-                model_name, phy
-            )
-            log_id = log_audit(
-                pid, scan_label, model_name,
-                combined['overall_label'],
-                combined['overall_risk'],
-                combined['overall_confidence'],
-                gradcam=gradcam_path is not None,
-                report=True, physician=phy
-            )
-            sh("Audit Record")
-            st.markdown(
-                f'<p style="font-size:11px;color:#64748b">'
-                f'Saved to history and audit trail. '
-                f'Log ID: <code style="color:#0891b2">{log_id}</code></p>',
-                unsafe_allow_html=True)
 
             # ── PDF report ──────────────────────────────────────────
             sh("Download Combined Report")
@@ -903,21 +880,15 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
 
                 safe_name = (f"HemoCheck_{scan_label.replace(' ','_')}"
                              f"_{pid}.pdf")
-                dl_col, id_col = st.columns([2, 1])
-                with dl_col:
-                    st.download_button(
-                        label="Download Combined PDF Report",
-                        data=pdf_bytes,
-                        file_name=safe_name,
-                        mime="application/pdf",
-                        use_container_width=True,
-                        key=f"dl_{scan_label}_{pid}_{int(time.time())}"
-                    )
-                with id_col:
-                    st.markdown(
-                        f'<p style="font-size:11px;color:#94a3b8;padding-top:10px">'
-                        f'Report ID: <code style="color:#0891b2">{log_id}</code></p>',
-                        unsafe_allow_html=True)
+                st.download_button(
+                    label="Download Combined PDF Report",
+                    data=pdf_bytes,
+                    file_name=safe_name,
+                    mime="application/pdf",
+                    use_container_width=True,
+                    key=f"dl_{scan_label}_{pid}_{int(time.time())}"
+                )
+
             except Exception as e:
                 st.error(f"PDF generation error: {e}")
 
@@ -930,15 +901,13 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
 # TABS
 # ══════════════════════════════════════════════════════════════════
 (tab_home, tab_ct, tab_mri, tab_us,
- tab_risk, tab_hist, tab_ana, tab_audit) = st.tabs([
+ tab_risk, tab_ana) = st.tabs([
     "Home",
     "CT Scan — Pulmonary Embolism",
     "MRI — Brain Clot",
     "Ultrasound — DVT",
     "Clinical Risk Only",
-    "History",
     "Analytics",
-    "Audit Trail",
 ])
 
 
@@ -1375,11 +1344,6 @@ with tab_risk:
             st.warning(f"SHAP unavailable: {e}")
             shap_path = None
 
-        log_prediction(pid, 'Clinical Risk', f"Risk: {rl}", rl,
-                       conf, 'XGBoost+RF Ensemble', phy)
-        log_id = log_audit(pid, 'Clinical Risk', 'XGBoost+RF Ensemble',
-                           f"Risk: {rl}", rl, conf, report=True, physician=phy)
-
         sh("Download Report")
         rpt = generate_report(
             patient_data=raw_r,
@@ -1399,76 +1363,6 @@ with tab_risk:
                 use_container_width=True,
                 key=f"dl_clinical_{pid}_{int(time.time())}"
             )
-        with lc:
-            st.markdown(
-                f'<p style="font-size:11px;color:#94a3b8;padding-top:10px">'
-                f'Audit: <code style="color:#0891b2">{log_id}</code></p>',
-                unsafe_allow_html=True)
-
-
-# ══════════════════════════════════════════════════════════════════
-# HISTORY TAB
-# ══════════════════════════════════════════════════════════════════
-with tab_hist:
-    sh("Patient Prediction History")
-    st.markdown(
-        '<p style="font-size:13px;color:#64748b;margin-bottom:20px">'
-        'All predictions stored in SQLite. Filter by patient ID.</p>',
-        unsafe_allow_html=True)
-    cf, cs = st.columns([3, 1])
-    with cf:
-        filter_pid = st.text_input("Filter by patient ID", value="", key="hf",
-                                   placeholder="e.g. PT-2024-0001")
-    with cs:
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("Refresh", key="hr", use_container_width=True):
-            st.rerun()
-    try:
-        from history import get_patient_history
-        df_h = (get_patient_history(filter_pid)
-                if filter_pid else get_all_history(100))
-        if df_h.empty:
-            st.info("No predictions logged yet.")
-        else:
-            st.dataframe(df_h, use_container_width=True, hide_index=True)
-            sh("Risk Distribution")
-            rc_c = df_h['risk_level'].value_counts()
-            cmap = {'HIGH':'#e11d48','MEDIUM':'#d97706','LOW':'#16a34a',
-                    'VERY LOW':'#0891b2','INCONCLUSIVE':'#94a3b8'}
-            fig, ax = plt.subplots(figsize=(7, 3.5),
-                                   facecolor='#ffffff')
-            ax.set_facecolor('#ffffff')
-            bars = ax.barh(
-                rc_c.index, rc_c.values,
-                color=[cmap.get(r,'#94a3b8') for r in rc_c.index],
-                height=0.5, edgecolor='none'
-            )
-            for bar in bars:
-                w = bar.get_width()
-                ax.text(w + 0.05,
-                        bar.get_y() + bar.get_height() / 2,
-                        str(int(w)), va='center',
-                        fontsize=10, color='#475569',
-                        fontweight='500')
-            ax.set_xlabel('Number of predictions',
-                          fontsize=10, color='#475569')
-            ax.set_title('Risk Level Distribution',
-                         fontsize=12, color='#0f172a',
-                         pad=12, fontweight='600', loc='left')
-            ax.tick_params(colors='#64748b', length=3)
-            ax.spines['top'].set_visible(False)
-            ax.spines['right'].set_visible(False)
-            ax.spines['left'].set_color('#e2e8f0')
-            ax.spines['bottom'].set_color('#e2e8f0')
-            ax.set_axisbelow(True)
-            ax.grid(axis='x', color='#f1f5f9', linewidth=1)
-            ax.grid(axis='y', visible=False)
-            ax.set_xlim(0, rc_c.max() * 1.2)
-            plt.tight_layout()
-            st.pyplot(fig, use_container_width=True)
-            plt.close()
-    except Exception as e:
-        st.error(f"History unavailable: {e}")
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -1529,39 +1423,6 @@ with tab_ana:
             '<p style="font-size:13px;color:#94a3b8;text-align:center;padding:40px 0">'
             'Click Compute Analytics to load performance charts</p>',
             unsafe_allow_html=True)
-
-
-# ══════════════════════════════════════════════════════════════════
-# AUDIT TRAIL TAB
-# ══════════════════════════════════════════════════════════════════
-with tab_audit:
-    sh("System Audit Trail and Prediction Logs")
-    st.markdown(
-        '<p style="font-size:13px;color:#64748b;margin-bottom:20px">'
-        'Every prediction logged with timestamp, model version, '
-        'Grad-CAM status, and report generation. Exportable as CSV.</p>',
-        unsafe_allow_html=True)
-    ar, ae = st.columns([3, 1])
-    with ar:
-        if st.button("Refresh Audit Log", key="arf", use_container_width=True):
-            st.rerun()
-    with ae:
-        try:
-            csv_p = export_audit_csv()
-            with open(csv_p, 'rb') as f:
-                st.download_button("Export CSV", data=f,
-                    file_name="HemoCheck_audit_log.csv",
-                    mime="text/csv", use_container_width=True)
-        except Exception:
-            pass
-    try:
-        df_a = get_audit_log(200)
-        if df_a.empty:
-            st.info("No audit records yet.")
-        else:
-            st.dataframe(df_a, use_container_width=True, hide_index=True)
-    except Exception as e:
-        st.error(f"Audit log unavailable: {e}")
 
 
 # ══════════════════════════════════════════════════════════════════
