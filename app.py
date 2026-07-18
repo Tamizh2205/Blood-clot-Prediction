@@ -20,6 +20,7 @@ from analytics       import (compute_metrics, plot_roc_comparison,
 from clinical_panel  import (render_clinical_form, run_clinical_prediction,
                               symptom_risk_score)
 from combined_analysis import fuse_results, get_risk_color, get_risk_kind
+from image_validator import validate_medical_image, get_rejection_message
 
 
 from datetime import datetime
@@ -673,6 +674,24 @@ def run_combined_scan_tab(img_file, model_loader, predictor_fn,
     6. Generate PDF
     """
     img_pil = Image.open(img_file).convert('RGB')
+
+    # ── Gate: reject non-medical images before running any model ────
+    validation = validate_medical_image(img_pil, scan_type=scan_label)
+    if not validation['is_valid']:
+        st.error(
+            f"**This doesn't look like a valid {scan_label} image.**\n\n"
+            f"{get_rejection_message(scan_label, validation)}"
+        )
+        with st.expander("Why was this image rejected?"):
+            st.markdown(f"**Detection confidence:** {validation['confidence']}%")
+            for reason in validation['reasons']:
+                st.markdown(f"- {reason}")
+            st.caption(
+                "This check runs before the AI model to prevent misleading "
+                "results (e.g. a confident 'No Clot Detected' on a non-medical photo). "
+                "Please upload an actual grayscale/DICOM-exported medical scan."
+            )
+        return
 
     with st.spinner(f"Running {model_name} + clinical ensemble..."):
         try:
